@@ -1,0 +1,7 @@
+.DS_Store
+packer_cache
+iso/*
+http/*
+example.pkrvars.hcl
+*.auto.pkrvars.hcl
+*.log

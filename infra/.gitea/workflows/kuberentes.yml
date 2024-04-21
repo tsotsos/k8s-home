@@ -1,0 +1,56 @@
+name: Create Kuberenetes Machines
+run-name: ${{ gitea.actor }} is building images
+on:
+  push:
+    tags:        
+      - '*'
+      - '**'
+jobs:
+  packer:
+    runs-on: terraform
+    env:
+      TF_VAR_proxmox_url: ${{secrets.TF_VAR_proxmox_url}}
+      TF_VAR_proxmox_token: ${{secrets.TF_VAR_proxmox_token}}
+      TF_VAR_proxmox_secret: ${{secrets.TF_VAR_proxmox_secret}}
+      PGUSER: ${{secrets.TF_PG_USER}}
+      PGPASSWORD: ${{secrets.TF_PG_PASSWORD}}
+      K8S_PATH: "./machines/k8s"
+      ANSIBLE_HOST_KEY_CHECKING: False
+    name: Create/Update k8s Machines
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Terraform
+        id: setup
+        uses: hashicorp/setup-terraform@v2
+      - name: Initialize Terraform
+        id: init
+        run: terraform init
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -var-file=${{env.K8S_PATH}}/kubernetes.tfvars -no-color
+      - name: Terraform Apply
+        id: plan
+        run: terraform apply -var-file=${{env.K8S_PATH}}/kubernetes.tfvars -auto-approve
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{secrets.SSH_PRIVATE}}
+          known_hosts: ${{secrets.KNOWN_HOSTS}}
+          if_key_exists: ignore
+      - name: Ansible provision hosts
+        id: ansible
+        run: ansible-playbook ${{env.K8S_PATH}}/playbook.yml -i ${{env.K8S_PATH}}/hosts.yml -vv
+      - name: Publish Release  
+        id: publish
+        uses: https://gitea.com/actions/release-action@main
+        with:
+          title: "Release ${{gitea.ref_name}}  - Image Templates created"
+          files: |-
+            ./README.md
+          api_key: '${{secrets.RELEASE_TOKEN}}'

@@ -1,0 +1,11 @@
+.DS_Store
+*.env
+*.lock
+*.terraform
+.vscode
+ansible/nomad-cluster/keys/
+deprecated/
+gitops_key
+gitops_key.pub
+secrets.env
+network.puml

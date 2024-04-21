@@ -1,0 +1,77 @@
+name: Build Alpine Images for homelab
+run-name: ${{ gitea.actor }} is building images
+on:
+  push:
+    tags:        
+      - '*'
+      - '**'
+defaults:
+  run:
+    working-directory: alpine
+jobs:
+  packer:
+    runs-on: packer
+    env:
+      TF_VAR_proxmox_url: ${{secrets.TF_VAR_proxmox_url}}
+      TF_VAR_proxmox_token: ${{secrets.TF_VAR_proxmox_token}}
+      TF_VAR_proxmox_secret: ${{secrets.TF_VAR_proxmox_secret}}
+    name: Deploy Image Template
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Retrieve Diffs
+        run: >
+          echo ::set-env name=ALL_DIFF::$(git --no-pager diff --name-only HEAD HEAD~1);
+          echo ::set-env name=VERSIONS_DIFF::$(git --no-pager diff --name-only HEAD HEAD~1 | grep 'alpine/versions/.*.hcl'| tr -s '[:blank:]');
+          echo ::set-env name=GLOB_DIFF::$(git --no-pager diff --name-only HEAD HEAD~1 | grep -Ei 'alpine/*.*hcl' | grep -Eiv "version" | tr -s '[:blank:]');
+      - name: Setup `packer`
+        id: setup
+        uses: hashicorp/setup-packer@main
+      - name: Initialize Packer
+        id: init
+        run: packer init .
+      - name: Validate All Versions
+        if: ${{ env.GLOB_DIFF != '' }}
+        run: >
+            for i in versions/*.pkrvars.hcl; do
+              echo "Validating... $i" ;
+              packer validate --var-file=${i} .;
+            done;
+      - name: Build Templates (forcing)
+        id: build-all
+        if: ${{ env.GLOB_DIFF != '' }}
+        run: >
+          for i in versions/*.pkrvars.hcl; do
+            echo "Building... $i" ;
+            packer build --var-file=${i} --var='template_description=Alpine 3.18 image - Automated Build - Release ${{gitea.ref_name}}' --only=file.answers,file.setup . ;
+            packer build --force --var-file=${i} --var='template_description=Alpine 3.18 image - Automated Build - Release ${{gitea.ref_name}}' .;
+          done;
+      - name: Validate Versions
+        if: ${{ (env.VERSIONS_DIFF != '') && (env.GLOB_DIFF == '') }}
+        id: validate-versions
+        run: > 
+          for item in ${{env.VERSIONS_DIFF}}; do
+            echo "Validating... $item" ;
+            packer validate --var-file=${item#alpine/} .;
+          done
+      - name: Build Versions
+        if: ${{ (env.VERSIONS_DIFF != '') && (env.GLOB_DIFF == '') }}
+        run: > 
+          for item in ${{env.VERSIONS_DIFF}}; do
+            echo "Building... $item" ;
+            packer build --var-file=${item#alpine/} --var='template_description=Alpine 3.18 image - Automated Build - Release ${{gitea.ref_name}}' --only=file.answers,file.setup . ;
+            packer build --force --var-file=${item#alpine/} --var='template_description=Alpine 3.18 image - Automated Build - Release ${{gitea.ref_name}}' .;
+          done
+      - name: Publish Release  
+        id: publish
+        uses: https://gitea.com/actions/release-action@main
+        if: ${{ env.ALL_DIFF != '' }}
+        with:
+          title: "Release ${{gitea.ref_name}}  - Image Templates created"
+          body: >
+            Changed files: ${{env.ALL_DIFF}}
+          files: |-
+            ./README.md
+          api_key: '${{secrets.RELEASE_TOKEN}}'

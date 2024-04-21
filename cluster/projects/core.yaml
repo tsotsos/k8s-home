@@ -36,7 +36,7 @@ spec:
   generators:
   - git:
       files:
-      - path: cluster/apps/**/core/config.json
+      - path: cluster/apps/core/**/core/config.json
       repoURL: https://github.com/tsotsos/k8s-home.git
       requeueAfterSeconds: 20
       revision: ""
@@ -47,7 +47,7 @@ spec:
           project: ""
   - git:
       files:
-      - path: cluster/apps/**/core/config_dir.json
+      - path: cluster/apps/core/**/core/config_dir.json
       repoURL: https://github.com/tsotsos/k8s-home.git
       requeueAfterSeconds: 20
       revision: ""
@@ -69,7 +69,7 @@ spec:
       labels:
         app.kubernetes.io/managed-by: argocd-autopilot
         app.kubernetes.io/name: '{{ appName }}'
-      name: core-{{ userGivenName }}
+      name: {{ userGivenName }}
       namespace: argocd
     spec:
       destination:

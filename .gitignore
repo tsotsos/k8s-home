@@ -9,3 +9,4 @@ gitops_key
 gitops_key.pub
 secrets.env
 network.puml
+kube.config

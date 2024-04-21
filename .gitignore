@@ -2,6 +2,7 @@
 *.env
 *.lock
 *.terraform
+*.asc
 .vscode
 ansible/nomad-cluster/keys/
 deprecated/

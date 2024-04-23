@@ -8,7 +8,7 @@ spec:
   avoidBuggyIPs: true
   addresses:
     # Reserved for MetalLB
-    - 10.0.1.64/28
+    - 10.0.1.64-10.0.1.68
 ---
 apiVersion: metallb.io/v1beta1
 kind: BFDProfile

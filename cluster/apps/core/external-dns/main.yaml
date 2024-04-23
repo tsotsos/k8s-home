@@ -79,7 +79,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: pihole-credentials
-                  key: credential
+                  key: password
           args:
             - --source=service
             - --source=ingress

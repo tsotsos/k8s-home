@@ -1,0 +1,17 @@
+connect:
+  connect:
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        external-dns.alpha.kubernetes.io/hostname: connect.kng.house
+      hosts:
+        - host: connect.kng.house
+          paths: []
+      tls:
+        - hosts:
+            - connect.kng.house
+          secretName: op-connect-tls
+  operator:
+    create: true

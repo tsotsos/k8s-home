@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+bases:
+    - core
+#   - home/
+#   - monitoring/
+#   - security/
+#resources:
+ # - test.yaml
+  # - metallb.yaml
+  # - powerdns.yaml
+  # - external-dns.yaml
+  # - argocd.yaml
+  # - cert-manager.yaml
+  # - cert-manager-issuer.yaml
+  # - ingress-nginx.yaml
+  # - postgresql.yaml
+  # - pgadmin.yaml
+  # - heimdall.yaml
+  # - nfs-provisioner.yaml
+  # - influxdb.yaml
+namespace: argocd

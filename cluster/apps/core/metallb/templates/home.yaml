@@ -11,29 +11,9 @@ spec:
     - 10.0.1.128-10.0.1.132
 ---
 apiVersion: metallb.io/v1beta1
-kind: BFDProfile
+kind: L2Advertisement
 metadata:
-  name: home
-  namespace: {{ .Release.Namespace }}
-spec:
-  receiveInterval: 380
-  transmitInterval: 270
----
-apiVersion: metallb.io/v1beta2
-kind: BGPPeer
-metadata:
-  name: home
-  namespace: {{ .Release.Namespace }}
-spec:
-  myASN: 64512
-  peerASN: 64512
-  peerAddress: 10.0.1.1
-  bfdProfile: home
----
-apiVersion: metallb.io/v1beta1
-kind: BGPAdvertisement
-metadata:
-  name: home
+  name: metallb
   namespace: {{ .Release.Namespace }}
 spec:
   ipAddressPools:

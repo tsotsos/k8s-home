@@ -4,13 +4,15 @@ kind: Application
 metadata:
   name: cert-manager
   namespace: argocd
+  annotations:
+     argocd.argoproj.io/sync-wave: "-7"
 spec:
   destination:
     namespace: cert-manager
     server: https://kubernetes.default.svc
   project: default
   source:
-    repoURL: https://github.com/tsotsos/k8s-home
+    repoURL: git@github.com:tsotsos/k8s-home.git
     targetRevision: main
     path: cluster/apps/core/cert-manager
   syncPolicy:

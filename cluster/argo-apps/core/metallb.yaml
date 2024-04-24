@@ -1,28 +1,20 @@
----
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: metallb
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "-5"
+     argocd.argoproj.io/sync-wave: "-9"
 spec:
   destination:
-    namespace: metallb-system
     server: https://kubernetes.default.svc
+    namespace: default
   project: default
   source:
-    repoURL: https://github.com/tsotsos/k8s-home
-    targetRevision: main
     path: cluster/apps/core/metallb
+    repoURL: git@github.com:tsotsos/k8s-home.git
+    targetRevision: release
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-  ignoreDifferences:
-    - group: apiextensions.k8s.io
-      kind: CustomResourceDefinition
-      jqPathExpressions:
-        - .spec.conversion.webhook.clientConfig

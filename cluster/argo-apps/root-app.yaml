@@ -13,7 +13,7 @@ spec:
   source:
     path: cluster/argo-apps/
     repoURL: https://github.com/tsotsos/k8s-home
-    targetRevision: release
+    targetRevision: main
   syncPolicy:
     automated:
       prune: true

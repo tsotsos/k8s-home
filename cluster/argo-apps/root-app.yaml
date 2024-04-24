@@ -12,7 +12,7 @@ spec:
   project: default
   source:
     path: argo-apps/
-    repoURL: git@github.com:tsotsos/k8s-home.git
+    repoURL: https://github.com/tsotsos/k8s-home
     targetRevision: release
   syncPolicy:
     automated:

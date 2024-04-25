@@ -9,3 +9,4 @@ resources:
 - ingress-nginx.yaml
 - external-dns.yaml
 - argocd.yaml
+- synology-csi.yaml

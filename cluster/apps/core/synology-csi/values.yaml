@@ -9,7 +9,7 @@ synology-csi:
       parameters:
         protocol: iscsi
         fsType: ext4
-        dsm: "nas.kng.rocks"
+        dsm: "10.0.1.10"
         location: /volume1/k8s
         formatOptions: --nodiscard
     retain:
@@ -18,7 +18,7 @@ synology-csi:
       parameters:
         protocol: iscsi
         fsType: ext4
-        dsm: "nas.kng.rocks"
+        dsm: "10.0.1.10"
         location: /volume1/k8s
         formatOptions: --nodiscard
   volumeSnapshotClasses:
